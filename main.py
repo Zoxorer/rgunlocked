@@ -110,6 +110,3 @@ def forum(page):
                            ditanya_oleh=thrd.get("username"),
                            assets=thrd.get("assets")
                            )
-
-app.run(host='0.0.0.0', port=80)
-
