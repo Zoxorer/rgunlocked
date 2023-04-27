@@ -1,0 +1,55 @@
+<html>
+	<head>
+		<meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Buka RoboGuru</title>
+		<script src="https://cdn.tailwindcss.com"></script>
+	</head>
+	<body>
+		<h1 class="text-4xl text-bold">Roboguru Unlocked</h1>
+		<form class="w-full max-w-sm">
+			<div class="flex items-center border-b border-slate-500 py-2">
+				<input class="appearance-none bg-transparent border-none w-full text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-none" type="text" placeholder="https://roboguru.ruangguru/..." aria-label="URL" id="input_url" onchange="verify();">
+				<button class="flex-shrink-0 bg-slate-500 hover:bg-slate-700 border-slate-500 hover:border-slate-700 text-sm border-4 text-white py-1 px-2 rounded" type="button" onclick="buka()">
+					Buka
+				</button>
+			</div>
+			<div id="a"></div>
+			<script>
+				// https://roboguru.ruangguru.com/forum/a
+				const a = document.getElementById("a");
+				const inpurl = document.getElementById("input_url");
+				function verify(){
+					let parser;
+					try{
+						parser = new URL(inpurl.value);
+					}
+					catch(e){
+						a.innerHTML = "<h1 class='bg-red-100'>URL Invalid, masukan dengan benar</h1>";
+						return 0;
+					}
+					
+					const isRG = (parser.hostname==="roboguru.ruangguru.com")?true:false;
+					const isType = parser.pathname.split("/")[1];
+					const target = parser.pathname.split("/")[2];
+					if((parser.href.startsWith("https://") || parser.href.startsWith("http://")) && isRG && (isType === "forum" || isType === "question") && target){
+						a.innerHTML = "<h1 class='bg-green-100'>Tekan 'Buka' untuk Melanjutkan</h1>";
+						return true;
+					}
+					else{
+						a.innerHTML = "<h1 class='bg-red-100'>URL Invalid, masukan dengan benar</h1>";
+						return false;
+					}
+				}
+				function buka(){
+					if(verify()){
+						let pathname = new URL(inpurl.value).pathname;
+						window.location.pathname = pathname;
+
+					}
+
+				}
+			</script>
+		</form>
+	</body>
+</html>
