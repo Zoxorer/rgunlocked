@@ -2,8 +2,7 @@ from bs4 import BeautifulSoup
 import json
 import requests
 import requests_cache
-from flask import Flask, render_template, request
-
+from flask import Flask, render_template, request, send_from_directory
 requests_cache.install_cache("roboguru",expire_after=120)
 class RoboguruForum:
 
@@ -80,10 +79,7 @@ def index():
 
 @app.route("/question/<page>")
 def question(page):
-    if(not page):
-        return 404
     resp = requests.get(f"https://roboguru.ruangguru.com/question/{page}",headers={"User-Agent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_5) AppleWebKit/600.8.9 (KHTML, like Gecko) Version/8.0.8 Safari/600.8.1"})
-    print("[REQ] Read %s from cache: %s" % (page,resp.from_cache))
     thrd = RoboguruQuestion(resp.text).thread()
     return render_template("rgquestion.html",
                            title=thrd.get("cleanShortContents"),
@@ -93,13 +89,13 @@ def question(page):
                            comments=thrd.get("comments"),
                            answerby=thrd.get("answerby")
                            )
+@app.route('/st/<path:path>')
+def send_js(path):
+    return send_from_directory('static', path)
 
-@app.route("/forum/<page>", endpoint="forum")
+@app.route("/forum/<page>")
 def forum(page):
-    if(not page):
-        return 404
     resp = requests.get(f"https://roboguru.ruangguru.com/forum/{page}", headers={"User-Agent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_5) AppleWebKit/600.8.9 (KHTML, like Gecko) Version/8.0.8 Safari/600.8.1"})
-    print("[REQ] Read %s from cache: %s" % (page,resp.from_cache))
     thrd = RoboguruForum(resp.text).thread()
     return render_template("rgforum.html",
                            title=thrd.get("cleanContent"),
@@ -110,3 +106,6 @@ def forum(page):
                            ditanya_oleh=thrd.get("username"),
                            assets=thrd.get("assets")
                            )
+
+app.run(host='0.0.0.0', port=8000)
+
